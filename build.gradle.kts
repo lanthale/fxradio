@@ -31,10 +31,11 @@ val defaultAppJvmArgs = listOf(
     "--add-opens=javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED",
     "--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED",
     "--enable-native-access=ALL-UNNAMED",
-    "--enable-native-access=javafx.graphics"
+    "--enable-native-access=javafx.graphics",
+    "--enable-preview"
 )
 
-version = "0.19.2"
+version = "1.0.0"
 
 val appVersion: String = version as String
 
@@ -121,7 +122,7 @@ configurations {
 }
 
 javafx {
-    version = "26"
+    version = "26.0.2"
     modules = mutableListOf("javafx.base", "javafx.graphics", "javafx.controls", "javafx.media")
 }
 
@@ -163,7 +164,8 @@ tasks.register<Exec>("jpackageMac") {
 
     dependsOn(copyDependencies, copyMainJar)
 
-    val javaHome = System.getProperty("java.home")
+    //val javaHome = System.getProperty("java.home")
+    val javaHome = "/Library/Java/JavaVirtualMachines/zulu-26.jdk/Contents/Home"
     val jpackageBin = "$javaHome/bin/jpackage"
 
     doFirst {
