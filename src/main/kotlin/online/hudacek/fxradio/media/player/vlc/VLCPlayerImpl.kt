@@ -52,7 +52,7 @@ class VLCPlayerImpl(override val playerType: MediaPlayer.Type = MediaPlayer.Type
     }
 
     override fun release() {
-        logger.info { "Releasing VLC player..." }
-        vlcAudioComponent.release()
+    logger.info { "Releasing VLC player..." }    
+    vlcAudioComponent.release()
     }
 }

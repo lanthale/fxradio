@@ -30,7 +30,7 @@ import tornadofx.get
 import tornadofx.insets
 import tornadofx.label
 import tornadofx.listview
-import tornadofx.onUserSelect
+import online.hudacek.fxradio.ui.util.onUserSelectSafe
 
 private const val GLYPH_SIZE = 14.0
 
@@ -57,7 +57,7 @@ class LibraryListView : BaseView() {
             }
         }
 
-        onUserSelect(clickCount = 1) {
+        onUserSelectSafe(clickCount = 1) {
             viewModel.stateProperty.value = it.type
         }
 

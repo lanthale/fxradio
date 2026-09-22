@@ -37,7 +37,7 @@ import tornadofx.insets
 import tornadofx.item
 import tornadofx.label
 import tornadofx.listview
-import tornadofx.onUserSelect
+import online.hudacek.fxradio.ui.util.onUserSelectSafe
 import tornadofx.selectedItem
 import tornadofx.stringBinding
 import java.util.*
@@ -99,7 +99,7 @@ class LibraryPinnedListView : BaseView() {
             addClass(Styles.libraryListItem)
         }
 
-        onUserSelect(clickCount = 1) {
+        onUserSelectSafe(clickCount = 1) {
             viewModel.stateProperty.value = LibraryState.SelectedCountry(it)
         }
 

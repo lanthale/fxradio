@@ -42,7 +42,7 @@ import tornadofx.insets
 import tornadofx.label
 import tornadofx.listview
 import tornadofx.observableListOf
-import tornadofx.onUserSelect
+import online.hudacek.fxradio.ui.util.onUserSelectSafe
 import tornadofx.show
 import tornadofx.top
 import tornadofx.vbox
@@ -73,7 +73,7 @@ class LibraryView : BaseView() {
                 }
             }
 
-            onUserSelect(clickCount = 1) {
+            onUserSelectSafe(clickCount = 1) {
                 Modal.Countries.openInternalWindow()
                 selectionModel.clearSelection()
             }

@@ -1,37 +1,19 @@
-import groovy.lang.Closure
-import io.github.fvarrui.javapackager.gradle.PackageTask
-import io.github.fvarrui.javapackager.model.MacConfig
-import io.github.fvarrui.javapackager.model.MacStartup
-import io.github.fvarrui.javapackager.model.SetupMode
-import io.github.fvarrui.javapackager.model.WindowsConfig
-import io.github.fvarrui.javapackager.model.Manifest
 import org.gradle.internal.os.OperatingSystem
 
-buildscript {
-    repositories {
-        mavenCentral()
-    }
-    dependencies {
-        classpath("io.github.fvarrui:javapackager:1.7.2")
-    }
-}
-
 plugins {
-    kotlin("jvm") version "1.9.23"
+    kotlin("jvm") version "2.4.0"
     id("org.openjfx.javafxplugin") version "0.1.0"
     id("application")
 }
 
-apply(plugin = "io.github.fvarrui.javapackager.plugin")
-
 val kotlinCoroutinesVersion = "1.8.1"
-val tornadoFxVersion = "2.0.0-SNAPSHOT"
+val tornadoFxVersion = "1.7.20"
 val log4jVersion = "2.23.1"
 val slf4jVersion = "2.0.13"
 val kotlinLoggingVersion = "3.0.5"
 val testFxVersion = "4.0.18"
 val junitVersion = "5.10.2"
-val vlcjVersion = "4.8.2"
+val vlcjVersion = "4.8.3"
 val humbleVersion = "0.3.0"
 val flywayVersion = "10.14.0"
 val controlsFxVersion = "11.2.1"
@@ -47,7 +29,9 @@ val defaultAppJvmArgs = listOf(
     "--add-opens=javafx.base/com.sun.javafx.runtime=ALL-UNNAMED",
     "--add-opens=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED",
     "--add-opens=javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED",
-    "--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED"
+    "--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED",
+    "--enable-native-access=ALL-UNNAMED",
+    "--enable-native-access=javafx.graphics"
 )
 
 version = "0.19.2"
@@ -59,14 +43,11 @@ allprojects {
 
     repositories {
         mavenCentral()
-        maven(url = "https://oss.sonatype.org/content/repositories/snapshots")
+        maven(url = "https://central.sonatype.com/repository/maven-snapshots/")
     }
 
     dependencies {
-        // Align versions of all Kotlin components
         implementation(platform(kotlin("bom")))
-
-        // Use the Kotlin JDK 8 standard library.
         implementation(kotlin("stdlib"))
 
         implementation("io.github.microutils:kotlin-logging-jvm:$kotlinLoggingVersion")
@@ -78,7 +59,7 @@ allprojects {
 
     kotlin {
         jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of(21))
+            languageVersion.set(JavaLanguageVersion.of(26))
             vendor.set(JvmVendorSpec.ADOPTIUM)
         }
     }
@@ -109,7 +90,6 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-core:$kotlinCoroutinesVersion")
     implementation("org.jetbrains.kotlinx:kotlinx-coroutines-javafx:$kotlinCoroutinesVersion")
 
-    // Players
     val os = OperatingSystem.current()
     implementation("io.humble:humble-video-noarch:$humbleVersion")
     if (os.isMacOsX) {
@@ -141,7 +121,7 @@ configurations {
 }
 
 javafx {
-    version = "21.0.2"
+    version = "26"
     modules = mutableListOf("javafx.base", "javafx.graphics", "javafx.controls", "javafx.media")
 }
 
@@ -150,51 +130,59 @@ application {
     applicationDefaultJvmArgs = defaultAppJvmArgs
 }
 
-task<PackageTask>("jfxNative") {
-    val outputDir = project.layout.buildDirectory.dir("jfx/native")
-    mainClass = "online.hudacek.fxradio.FxRadioKt"
-    appName = "FXRadio"
-    appDescription = "Internet Radio Directory"
-    assetsDir = File("${project.rootDir}/src/main/deploy/package")
-    outputDirectory = outputDir.get().asFile
-    displayName = "FXRadio"
-    version = appVersion
-    url = "https://hudacek.online/fxradio"
-    isCustomizedJre = false
-    organizationName = "FXRadio"
-    organizationUrl = "https://hudacek.online/fxradio"
-    organizationEmail = "fxradio@hudacek.online"
-    isCreateZipball = true
-    manifest(closureOf<Manifest> {
-        additionalEntries = mapOf(
-            "Implementation-Version" to appVersion
-        )
-    } as Closure<Manifest>)
+// --- jpackage-based macOS packaging (replaces javapackager/launch4j) ---
 
-    macConfig(closureOf<MacConfig> {
-        macStartup = MacStartup.UNIVERSAL
-        isGeneratePkg = false
-        isCodesignApp = false
-        backgroundImage = File("src/main/deploy/package/mac/background.png")
-    } as Closure<MacConfig>)
-    winConfig(closureOf<WindowsConfig> {
-        isGenerateSetup = false
-        isGenerateMsi = true
-        setupMode = SetupMode.askTheUser
-        productVersion = appVersion
-        fileVersion = appVersion
-        isDisableDirPage = false
-        isDisableProgramGroupPage = false
-        isDisableWelcomePage = false
-        isDisableFinishedPage = false
-        isDisableRunAfterInstall = false
-        isRemoveOldLibs = true
-    } as Closure<WindowsConfig>)
-    dependsOn("jar")
-    vmArgs = listOf(
-        "-Xms256m",
-        "-Xmx1500m",
-        "-XX:+UnlockExperimentalVMOptions",
-        "-XX:+UseG1GC"
+val jpackageInputDir = layout.buildDirectory.dir("jpackage/input")
+val jpackageLibDir = layout.buildDirectory.dir("jpackage/input/lib")
+val jpackageOutputDir = layout.buildDirectory.dir("jpackage/output")
+
+// Make the jar runnable standalone by pointing its manifest Class-Path at lib/*.jar
+tasks.jar {
+    manifest {
+        attributes["Class-Path"] = configurations.runtimeClasspath.get().files
+            .joinToString(" ") { "lib/${it.name}" }
+        attributes["Main-Class"] = "online.hudacek.fxradio.FxRadioKt"
+    }
+}
+
+val copyDependencies by tasks.registering(Copy::class) {
+    from(configurations.runtimeClasspath)
+    into(jpackageLibDir)
+}
+
+val copyMainJar by tasks.registering(Copy::class) {
+    dependsOn(tasks.jar)
+    from(tasks.jar.get().archiveFile)
+    into(jpackageInputDir)
+    rename { "FxRadio.jar" }
+}
+
+tasks.register<Exec>("jpackageMac") {
+    group = "distribution"
+    description = "Packages the app as a macOS .app/.dmg using the JDK's built-in jpackage tool"
+
+    dependsOn(copyDependencies, copyMainJar)
+
+    val javaHome = System.getProperty("java.home")
+    val jpackageBin = "$javaHome/bin/jpackage"
+
+    doFirst {
+        jpackageOutputDir.get().asFile.mkdirs()
+    }
+
+    commandLine(
+        listOf(
+            jpackageBin,
+            "--type", "dmg",
+            "--input", jpackageInputDir.get().asFile.absolutePath,
+            "--main-jar", "FxRadio.jar",
+            "--main-class", "online.hudacek.fxradio.FxRadioKt",
+            "--name", "FXRadio",
+            "--app-version", appVersion,
+            "--description", "Internet Radio Directory",
+            "--vendor", "FXRadio",
+            "--dest", jpackageOutputDir.get().asFile.absolutePath,
+            "--icon", "src/main/deploy/package/mac/FxRadio.icns"
+        ) + defaultAppJvmArgs.flatMap { listOf("--java-options", it) }
     )
 }

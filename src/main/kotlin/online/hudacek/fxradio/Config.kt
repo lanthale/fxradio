@@ -32,7 +32,7 @@ object Config {
 
     object API {
         const val DNS_LOOKUP_URL = "all.api.radio-browser.info"
-        const val FALLBACK_URL = "nl1.api.radio-browser.info"
+        const val FALLBACK_URL = "de1.api.radio-browser.info"
         const val BASE_URL = "https://radio-browser.info"
         const val MUSICBRAINZ_URL = "https://musicbrainz.org/ws/2/"
         const val COVER_ART_URL = "https://coverartarchive.org/release/"

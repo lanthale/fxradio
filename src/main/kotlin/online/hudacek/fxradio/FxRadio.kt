@@ -124,7 +124,7 @@ open class FxRadio(
         trayIcon.subscribe()
         MacUtils.setAppearance(preferencesViewModel.darkModeProperty.value)
         if (MacUtils.isMac) {
-            NsMenu.createDockMenu()
+            //NsMenu.createDockMenu()
         }
     }
 
