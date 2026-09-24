@@ -60,8 +60,18 @@ allprojects {
 
     kotlin {
         jvmToolchain {
-            languageVersion.set(JavaLanguageVersion.of(26))
+            languageVersion.set(JavaLanguageVersion.of(27))
             vendor.set(JvmVendorSpec.ADOPTIUM)
+        }
+    }
+
+    // NEU: sorgt dafür, dass compileJava dieselbe Toolchain wie compileKotlin nutzt
+    plugins.withType<JavaBasePlugin> {
+        extensions.configure<JavaPluginExtension> {
+            toolchain {
+                languageVersion.set(JavaLanguageVersion.of(27))
+                vendor.set(JvmVendorSpec.ADOPTIUM)
+            }
         }
     }
 }
@@ -165,7 +175,7 @@ tasks.register<Exec>("jpackageMac") {
     dependsOn(copyDependencies, copyMainJar)
 
     //val javaHome = System.getProperty("java.home")
-    val javaHome = "/Library/Java/JavaVirtualMachines/zulu-26.jdk/Contents/Home"
+    val javaHome = "/Library/Java/JavaVirtualMachines/temurin-27.jdk/Contents/Home"
     val jpackageBin = "$javaHome/bin/jpackage"
 
     doFirst {
