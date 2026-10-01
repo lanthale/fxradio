@@ -10,4 +10,11 @@
                 <activatedProfile>jpackage-mac</activatedProfile>
             </activatedProfiles>
         </action>
+        <action>
+            <actionName>CUSTOM-Dependency plugin check</actionName>
+            <displayName>Dependency plugin check</displayName>
+            <goals>
+                <goal>site</goal>
+            </goals>
+        </action>
     </actions>
