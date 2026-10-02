@@ -152,7 +152,7 @@ class StationsInfoView : BaseView() {
                     coverArtUseCase.execute(it.metaData.nowPlaying)
                         .subscribe {
                             if (it.isSuccessful) {
-                                it.body?.byteStream().use { i ->
+                                it.body.byteStream().use { i ->
                                     image = Image(i, 80.0, 80.0, true, true)
                                 }
                             }

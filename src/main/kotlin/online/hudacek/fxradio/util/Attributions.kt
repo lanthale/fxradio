@@ -28,8 +28,7 @@ object Attributions {
         observableListOf(
             Attribution("tornadofx", "2.0.0-SNAPSHOT", Licenses.apache20),
             Attribution("controlsfx", "11.1.2", Licenses.controlsfx),
-            Attribution("vlcj", "4.8.2", Licenses.gpl3),
-            Attribution("humble-video", "0.3.0", Licenses.agpl3),
+            Attribution("vlcj", "4.8.2", Licenses.gpl3),            
             Attribution("Retrofit HTTP client", "2.9.0", Licenses.retrofit),
             Attribution("slf4j-api", "2.0.7", Licenses.sl4fj),
             Attribution("log4j", "2.20.0", Licenses.apache20),
@@ -81,19 +80,7 @@ object Attributions {
         val agpl3 = License(
             "AGPL v3", "Copyright (c) 2014, Andrew \"Art\" Clarke.  All rights reserved.\n" +
                     " *   \n" +
-                    " *\n" +
-                    " * Humble-Video is free software: you can redistribute it and/or modify\n" +
-                    " * it under the terms of the GNU Affero General Public License as published by\n" +
-                    " * the Free Software Foundation, either version 3 of the License, or\n" +
-                    " * (at your option) any later version.\n" +
-                    " *\n" +
-                    " * Humble-Video is distributed in the hope that it will be useful,\n" +
-                    " * but WITHOUT ANY WARRANTY; without even the implied warranty of\n" +
-                    " * MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the\n" +
-                    " * GNU Affero General Public License for more details.\n" +
-                    " *\n" +
-                    " * You should have received a copy of the GNU Affero General Public License\n" +
-                    " * along with Humble-Video.  If not, see <http://www.gnu.org/licenses/>."
+                    " *\n"                    
         )
         val sl4fj = License(
             "MIT License", "Copyright (c) 2004-2017 QOS.ch\n" +

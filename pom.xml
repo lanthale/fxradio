@@ -18,8 +18,6 @@
         <kotlin.code.style>official</kotlin.code.style>
         <javafx.version>27</javafx.version>
         <skipTests>true</skipTests>
-    
-    
 
         <jackson.version>2.22.1</jackson.version>
         <okhttp.version>5.5.0</okhttp.version>
@@ -31,8 +29,7 @@
         <kotlinLogging.version>3.0.5</kotlinLogging.version>
         <testfx.version>4.0.18</testfx.version>
         <junit.version>5.10.2</junit.version>
-        <vlcj.version>4.8.4</vlcj.version>
-        <humble.version>0.3.0</humble.version>
+        <vlcj.version>4.8.4</vlcj.version>                
         <flyway.version>13.9.0</flyway.version>
         <controlsfx.version>11.2.5</controlsfx.version>
         <app.jvmargs>--add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED --add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED --add-opens=javafx.controls/javafx.scene.control=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.event=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED --add-opens=javafx.base/com.sun.javafx.runtime=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED --add-opens=javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED --add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED --enable-native-access=ALL-UNNAMED --enable-preview</app.jvmargs>
@@ -70,7 +67,28 @@
                 <artifactId>kotlin-stdlib</artifactId>
                 <version>${kotlin.version}</version>
             </dependency>
-        </dependencies>
+            <!-- JavaFX -->
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-base</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-graphics</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-controls</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-media</artifactId>
+                <version>${javafx.version}</version>
+            </dependency>
+        </dependencies>        
     </dependencyManagement>
 
     <dependencies>
@@ -144,6 +162,20 @@
             <groupId>io.reactivex.rxjava3</groupId>
             <artifactId>rxjava</artifactId>
             <version>3.1.8</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-base</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-graphics</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-controls</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <!-- UI -->
@@ -235,6 +267,14 @@
                 <exclusion>
                     <groupId>net.java.dev.jna</groupId>
                     <artifactId>jna-platform</artifactId>
+                </exclusion>                
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-fxml</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.openjfx</groupId>
+                    <artifactId>javafx-controls</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -296,12 +336,7 @@
             </exclusions>
         </dependency>
 
-        <!-- Audio -->
-        <dependency>
-            <groupId>io.humble</groupId>
-            <artifactId>humble-video-noarch</artifactId>
-            <version>${humble.version}</version>
-        </dependency>
+        <!-- Audio -->        
         <dependency>
             <groupId>uk.co.caprica</groupId>
             <artifactId>vlcj</artifactId>
@@ -317,27 +352,23 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <!-- JavaFX -->
+        
+        <!-- JavaFX (Version kommt aus dependencyManagement) -->
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-base</artifactId>
-            <version>${javafx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-graphics</artifactId>
-            <version>${javafx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>${javafx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-media</artifactId>
-            <version>${javafx.version}</version>
         </dependency>
 
         <!-- Tests -->
@@ -516,62 +547,7 @@
         </plugins>
     </reporting>
 
-    <profiles>
-        <profile>
-            <id>humble-mac</id>
-            <activation>
-                <os>
-                    <family>mac</family>
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>io.humble</groupId>
-                    <artifactId>humble-video-arch-x86_64-apple-darwin18</artifactId>
-                    <version>${humble.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>humble-windows</id>
-            <activation>
-                <os>
-                    <family>windows</family>
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>io.humble</groupId>
-                    <artifactId>humble-video-arch-x86_64-w64-mingw32</artifactId>
-                    <version>${humble.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>io.humble</groupId>
-                    <artifactId>humble-video-arch-i686-w64-mingw32</artifactId>
-                    <version>${humble.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
-        <profile>
-            <id>humble-linux</id>
-            <activation>
-                <os>
-                    <name>Linux</name>
-                </os>
-            </activation>
-            <dependencies>
-                <dependency>
-                    <groupId>io.humble</groupId>
-                    <artifactId>humble-video-arch-i686-pc-linux-gnu6</artifactId>
-                    <version>${humble.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>io.humble</groupId>
-                    <artifactId>humble-video-arch-x86_64-pc-linux-gnu6</artifactId>
-                    <version>${humble.version}</version>
-                </dependency>
-            </dependencies>
-        </profile>
+    <profiles>        
 
         <!-- macOS-DMG: mvn -Pjpackage-mac package -->
         <profile>
@@ -612,6 +588,163 @@
                                         <argument>${project.build.directory}/jpackage/output</argument>
                                         <argument>--icon</argument>
                                         <argument>${project.basedir}/src/main/deploy/package/mac/FxRadio.icns</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens=javafx.controls/javafx.scene.control=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens=javafx.base/com.sun.javafx.event=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens=javafx.base/com.sun.javafx.runtime=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens=javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--enable-native-access=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--enable-native-access=javafx.graphics</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--enable-preview</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- Linux-DEB: mvn -Pjpackage-linux package (nur auf Linux ausführbar) -->
+        <profile>
+            <id>jpackage-linux</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.5.0</version>
+                        <executions>
+                            <execution>
+                                <id>jpackage-deb</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${java.home}/bin/jpackage</executable>
+                                    <arguments>
+                                        <argument>--type</argument>
+                                        <argument>deb</argument>
+                                        <argument>--input</argument>
+                                        <argument>${project.build.directory}/jpackage/input</argument>
+                                        <argument>--main-jar</argument>
+                                        <argument>FxRadio.jar</argument>
+                                        <argument>--main-class</argument>
+                                        <argument>${mainClass}</argument>
+                                        <argument>--name</argument>
+                                        <argument>FXRadio</argument>
+                                        <argument>--linux-package-name</argument>
+                                        <argument>fxradio</argument>
+                                        <argument>--app-version</argument>
+                                        <argument>${project.version}</argument>
+                                        <argument>--description</argument>
+                                        <argument>Internet Radio Directory</argument>
+                                        <argument>--vendor</argument>
+                                        <argument>FXRadio</argument>
+                                        <argument>--dest</argument>
+                                        <argument>${project.build.directory}/jpackage/output</argument>
+                                        <argument>--icon</argument>
+                                        <argument>${project.basedir}/src/main/deploy/package/linux/FxRadio.png</argument>
+                                        <argument>--linux-shortcut</argument>
+                                        <argument>--linux-menu-group</argument>
+                                        <argument>AudioVideo;Audio;</argument>
+                                        <argument>--linux-app-category</argument>
+                                        <argument>sound</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens=javafx.graphics/javafx.scene=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens=javafx.controls/javafx.scene.control=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens=javafx.base/com.sun.javafx.event=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens=javafx.base/com.sun.javafx.collections=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens=javafx.base/com.sun.javafx.runtime=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens=javafx.graphics/com.sun.javafx.scene=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-opens=javafx.graphics/com.sun.javafx.scene.traversal=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--add-exports=javafx.graphics/com.sun.javafx.application=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--enable-native-access=ALL-UNNAMED</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--enable-native-access=javafx.graphics</argument>
+                                        <argument>--java-options</argument>
+                                        <argument>--enable-preview</argument>
+                                    </arguments>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
+        </profile>
+        <!-- Windows-Installer: mvn -Pjpackage-windows package (nur auf Windows ausführbar) -->
+        <profile>
+            <id>jpackage-windows</id>
+            <build>
+                <plugins>
+                    <plugin>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>3.5.0</version>
+                        <executions>
+                            <execution>
+                                <id>jpackage-msi</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${java.home}/bin/jpackage.exe</executable>
+                                    <arguments>
+                                        <argument>--type</argument>
+                                        <argument>msi</argument>
+                                        <argument>--input</argument>
+                                        <argument>${project.build.directory}/jpackage/input</argument>
+                                        <argument>--main-jar</argument>
+                                        <argument>FxRadio.jar</argument>
+                                        <argument>--main-class</argument>
+                                        <argument>${mainClass}</argument>
+                                        <argument>--name</argument>
+                                        <argument>FXRadio</argument>
+                                        <argument>--app-version</argument>
+                                        <argument>${project.version}</argument>
+                                        <argument>--description</argument>
+                                        <argument>Internet Radio Directory</argument>
+                                        <argument>--vendor</argument>
+                                        <argument>FXRadio</argument>
+                                        <argument>--dest</argument>
+                                        <argument>${project.build.directory}/jpackage/output</argument>
+                                        <argument>--icon</argument>
+                                        <argument>${project.basedir}/src/main/deploy/package/windows/FxRadio.ico</argument>
+                                        <argument>--win-menu</argument>
+                                        <argument>--win-menu-group</argument>
+                                        <argument>FXRadio</argument>
+                                        <argument>--win-shortcut</argument>
+                                        <argument>--win-dir-chooser</argument>
+                                        <argument>--win-per-user-install</argument>
+                                        <argument>--win-upgrade-uuid</argument>
+                                        <argument>5b0f6d3a-8c1e-4f6e-9a57-2d7c3e1b4a90</argument>
                                         <argument>--java-options</argument>
                                         <argument>--add-opens=javafx.controls/javafx.scene.control.skin=ALL-UNNAMED</argument>
                                         <argument>--java-options</argument>

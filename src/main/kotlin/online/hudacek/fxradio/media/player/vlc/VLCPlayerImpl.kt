@@ -36,7 +36,7 @@ class VLCPlayerImpl(override val playerType: MediaPlayer.Type = MediaPlayer.Type
     }
 
     override fun changeVolume(newVolume: Double) {
-        // Recalculate humble player volume levels to VLC
+        // Recalculate app volume levels to VLC
         val vlcVolume: Double =
             if (newVolume < -34.5) {
                 0.0

@@ -21,7 +21,7 @@ package online.hudacek.fxradio.media
 import javafx.application.Platform
 import mu.KotlinLogging
 import online.hudacek.fxradio.media.player.experimental.FxPlayerImpl
-import online.hudacek.fxradio.media.player.humble.HumblePlayerImpl
+
 import online.hudacek.fxradio.media.player.vlc.VLCPlayerImpl
 import online.hudacek.fxradio.util.Properties
 import online.hudacek.fxradio.util.RxAlert.warning
@@ -35,52 +35,48 @@ object MediaPlayerFactory {
 
     private val defaultPlayerType = MediaPlayer.Type.VLC
 
-    /**
-     * Create MediaPlayer
-     */
     fun create(): MediaPlayer {
         val player = Properties.Player.value(defaultPlayerType.name)
         logger.info { "MediaPlayer $player is initializing..." }
         return when (player.asPlayerType()) {
             MediaPlayer.Type.VLC -> tryLoadVLCPlayer()
-            MediaPlayer.Type.Humble -> HumblePlayerImpl()
             MediaPlayer.Type.FX -> FxPlayerImpl()
         }
     }
 
-    /**
-     * Toggle MediaPlayer
-     */
     fun toggle(): MediaPlayer {
         logger.debug { "MediaPlayer toggling..." }
         val currentPlayer = Properties.Player.value(defaultPlayerType.name)
         return when (currentPlayer.asPlayerType()) {
-            MediaPlayer.Type.Humble -> tryLoadVLCPlayer()
-            MediaPlayer.Type.VLC -> HumblePlayerImpl()
-            else -> tryLoadVLCPlayer()
+            MediaPlayer.Type.FX -> tryLoadVLCPlayer()
+            MediaPlayer.Type.VLC -> FxPlayerImpl()
         }
     }
 
     /**
      * Tries to load VLCPlayer. If it is not installed on the system,
-     * it loads the Humble player instead.
+     * it loads the JavaFX player instead.
      */
     private fun tryLoadVLCPlayer(): MediaPlayer = runCatching {
-        VLCPlayerImpl()
+        VLCPlayerImpl() as MediaPlayer
     }.onFailure {
         logger.error(it) { "Exception when initializing VLC Player!" }
         Platform.runLater {
             warning(messages["player.vlc.missing.title"], messages["player.vlc.missing.description"])
                 .subscribe()
         }
-    }.getOrDefault(HumblePlayerImpl())
+    }.getOrElse { FxPlayerImpl() }
 
     /**
-     * Helper for loading of playerType from app.properties file
+     * Helper for loading of playerType from app.properties file.
+     * Settings saved by older versions ("Humble") are mapped to the JavaFX player.
      */
-    private fun String.asPlayerType() = runCatching {
-        MediaPlayer.Type.valueOf(this)
-    }.onFailure {
-        logger.error(it) { "This playerType is invalid. Trying to load VLC player instead!" }
-    }.getOrDefault(defaultPlayerType)
+    private fun String.asPlayerType(): MediaPlayer.Type =
+        if (equals("Humble", ignoreCase = true)) {
+            MediaPlayer.Type.FX
+        } else {
+            runCatching { MediaPlayer.Type.valueOf(this) }
+                .onFailure { logger.error(it) { "This playerType is invalid. Trying to load VLC player instead!" } }
+                .getOrDefault(defaultPlayerType)
+        }
 }

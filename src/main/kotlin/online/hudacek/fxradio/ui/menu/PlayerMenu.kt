@@ -62,7 +62,7 @@ class PlayerMenu : BaseMenu("menu.player.controls") {
             playerViewModel.mediaPlayerProperty.toObservable()
                 .map { it.playerType }
                 .subscribe {
-                    isSelected = it == MediaPlayer.Type.Humble
+                    isSelected = it == MediaPlayer.Type.FX
                 }
             action {
                 with(playerViewModel) {
