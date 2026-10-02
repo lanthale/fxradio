@@ -573,7 +573,7 @@
                                         <argument>--input</argument>
                                         <argument>${project.build.directory}/jpackage/input</argument>
                                         <argument>--main-jar</argument>
-                                        <argument>FxRadio.jar</argument>
+                                        <argument>fxradio-${version}.jar</argument>
                                         <argument>--main-class</argument>
                                         <argument>${mainClass}</argument>
                                         <argument>--name</argument>
@@ -644,7 +644,7 @@
                                         <argument>--input</argument>
                                         <argument>${project.build.directory}/jpackage/input</argument>
                                         <argument>--main-jar</argument>
-                                        <argument>FxRadio.jar</argument>
+                                        <argument>fxradio-${version}.jar</argument>
                                         <argument>--main-class</argument>
                                         <argument>${mainClass}</argument>
                                         <argument>--name</argument>
@@ -722,7 +722,7 @@
                                         <argument>--input</argument>
                                         <argument>${project.build.directory}/jpackage/input</argument>
                                         <argument>--main-jar</argument>
-                                        <argument>FxRadio.jar</argument>
+                                        <argument>fxradio-${version}.jar</argument>
                                         <argument>--main-class</argument>
                                         <argument>${mainClass}</argument>
                                         <argument>--name</argument>
