@@ -1,0 +1,72 @@
+name: Release builds
+
+on:
+  release:
+    types: [published]
+  workflow_dispatch:      # manueller Testlauf (Artefakte, aber kein Upload ans Release)
+
+permissions:
+  contents: write         # nötig, um Dateien an das Release zu hängen
+
+jobs:
+  package:
+    name: Package ${{ matrix.name }}
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: macOS-arm64
+            os: macos-latest
+            profile: jpackage-mac
+            ext: dmg
+          - name: windows
+            os: windows-latest
+            profile: jpackage-windows
+            ext: msi
+          - name: linux
+            os: ubuntu-latest
+            profile: jpackage-linux
+            ext: deb
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 27
+        uses: actions/setup-java@v4
+        with:
+          java-version: '27'
+          distribution: 'temurin'
+          cache: maven
+
+      - name: Install Linux packaging tools
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y fakeroot dpkg-dev
+
+      - name: Build and package
+        run: mvn -B clean package -P${{ matrix.profile }} -DskipTests
+
+      - name: Rename package
+        shell: bash
+        run: |
+          TAG="${{ github.event.release.tag_name || github.ref_name }}"
+          mkdir -p dist
+          for f in target/jpackage/output/*.${{ matrix.ext }}; do
+            cp "$f" "dist/FXRadio-${TAG}-${{ matrix.name }}.${{ matrix.ext }}"
+          done
+          ls -l dist
+
+      - name: Upload workflow artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: FXRadio-${{ matrix.name }}
+          path: dist/*
+
+      - name: Attach to GitHub release
+        if: github.event_name == 'release'
+        shell: bash
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          gh release upload "${{ github.event.release.tag_name }}" dist/* \
+            --clobber --repo "${{ github.repository }}"
