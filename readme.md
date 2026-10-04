@@ -49,14 +49,14 @@ sudo xattr -r -d com.apple.quarantine /Applications/FXRadio.app/
 
 # Build
 
-App requires JDK 21 and JavaFX 21 to build and run.
+App requires JDK 25 and JavaFX 25 as minimum to build and run.
 
 To build the app yourself:
 
 - Clone the repository
-- Run ```./gradlew jfxNative``` command from the root project directory
+- Run ```mvn clean compile; mvn javafx:run``` command from the root project directory
 
-Build output is present in ```build/jfx/``` directory.
+Build output is present in ```target/``` directory.
 
 -----------------------------------------------------
 macOS install disk background designed by [xb100 / Freepik](https://www.freepik.com/author/xb100)
