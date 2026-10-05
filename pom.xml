@@ -6,15 +6,15 @@
 
     <groupId>online.hudacek</groupId>
     <artifactId>fxradio</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.1</version>
     <packaging>jar</packaging>
 
     <properties>
         <mainClass>online.hudacek.fxradio.FxRadioKt</mainClass>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <java.version>27</java.version>    
-        <kotlin.jvmTarget>27</kotlin.jvmTarget>
-        <kotlin.version>2.5.0-Beta1</kotlin.version>
+        <kotlin.jvmTarget>26</kotlin.jvmTarget>
+        <kotlin.version>2.4.20</kotlin.version>
         <kotlin.code.style>official</kotlin.code.style>
         <javafx.version>27</javafx.version>
         <skipTests>true</skipTests>
@@ -23,7 +23,7 @@
         <okhttp.version>5.5.0</okhttp.version>
         <retrofit.version>3.0.0</retrofit.version>
         <kotlinCoroutines.version>1.11.0</kotlinCoroutines.version>
-        <tornadofx.version>1.7.20</tornadofx.version>
+        <tornadofx.version>2.0.3</tornadofx.version>
         <log4j.version>2.23.1</log4j.version>
         <slf4j.version>2.0.13</slf4j.version>
         <kotlinLogging.version>3.0.5</kotlinLogging.version>
@@ -180,8 +180,10 @@
 
         <!-- UI -->
         <dependency>
-            <groupId>no.tornado</groupId>
-            <artifactId>tornadofx</artifactId>
+            <!--<groupId>no.tornado</groupId>
+            <artifactId>tornadofx</artifactId>-->
+            <groupId>com.googlecode.blaisemath.tornado</groupId>
+            <artifactId>tornadofx-fx21k18</artifactId>
             <version>${tornadofx.version}</version>
             <exclusions>
                 <exclusion>
