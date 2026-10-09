@@ -35,7 +35,7 @@ object MediaPlayerFactory {
 
     private val defaultPlayerType = MediaPlayer.Type.VLC
 
-    fun create(): MediaPlayer {
+    /*fun create(): MediaPlayer {
         val player = Properties.Player.value(defaultPlayerType.name)
         logger.info { "MediaPlayer $player is initializing..." }
         return when (player.asPlayerType()) {
@@ -51,7 +51,24 @@ object MediaPlayerFactory {
             MediaPlayer.Type.FX -> tryLoadVLCPlayer()
             MediaPlayer.Type.VLC -> FxPlayerImpl()
         }
+    }*/
+    fun create(): MediaPlayer {
+    val player = Properties.Player.value(defaultPlayerType.name)
+    logger.info { "MediaPlayer $player is initializing..." }
+    return when (player.asPlayerType()) {
+        MediaPlayer.Type.VLC -> DeferredMediaPlayer(MediaPlayer.Type.VLC) { tryLoadVLCPlayer() }
+        MediaPlayer.Type.FX -> FxPlayerImpl()
     }
+}
+
+fun toggle(): MediaPlayer {
+    logger.debug { "MediaPlayer toggling..." }
+    val currentPlayer = Properties.Player.value(defaultPlayerType.name)
+    return when (currentPlayer.asPlayerType()) {
+        MediaPlayer.Type.FX -> DeferredMediaPlayer(MediaPlayer.Type.VLC) { tryLoadVLCPlayer() }
+        MediaPlayer.Type.VLC -> FxPlayerImpl()
+    }
+}
 
     /**
      * Tries to load VLCPlayer. If it is not installed on the system,
