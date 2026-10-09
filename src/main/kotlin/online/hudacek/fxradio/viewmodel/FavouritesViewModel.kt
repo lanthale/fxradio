@@ -56,8 +56,8 @@ class FavouritesViewModel : BaseViewModel<Favourites>(Favourites()) {
     val stationsObservable: Observable<ObservableList<Station>> = stationsProperty.toObservable()
 
     init {
-        favouritesGetUseCase.execute(Unit).subscribe {
-            stationsProperty.add(it)
+        runAsync { favouritesGetUseCase.execute(Unit) } ui { favourites ->
+           favourites.subscribe { stationsProperty.add(it) }
         }
     }
 
