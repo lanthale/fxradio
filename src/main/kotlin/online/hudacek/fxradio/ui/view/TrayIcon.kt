@@ -18,15 +18,21 @@
 package online.hudacek.fxradio.ui.view
 
 import javafx.application.Platform
+import javafx.collections.ListChangeListener
 import online.hudacek.fxradio.Config
 import online.hudacek.fxradio.FxRadio
+import online.hudacek.fxradio.apiclient.radiobrowser.model.Station
 import online.hudacek.fxradio.util.toObservable
+import online.hudacek.fxradio.viewmodel.FavouritesViewModel
 import online.hudacek.fxradio.viewmodel.PlayerState
 import online.hudacek.fxradio.viewmodel.PlayerViewModel
 import online.hudacek.fxradio.viewmodel.PreferencesViewModel
+import online.hudacek.fxradio.viewmodel.SelectedStation
 import online.hudacek.fxradio.viewmodel.SelectedStationViewModel
 import tornadofx.Controller
 import tornadofx.get
+import java.awt.Menu
+import java.awt.MenuItem
 import java.awt.SystemTray.getSystemTray
 import java.awt.TrayIcon
 import javax.swing.SwingUtilities
@@ -39,8 +45,13 @@ class TrayIcon : Controller() {
     private val playerViewModel: PlayerViewModel by inject()
     private val selectedStationViewModel: SelectedStationViewModel by inject()
     private val preferencesViewModel: PreferencesViewModel by inject()
+    private val favouritesViewModel: FavouritesViewModel by inject()
 
     private var trayIcon: TrayIcon? = null
+
+    private var favouritesMenu: Menu? = null
+
+    private val favouritesListener = ListChangeListener<Station> { refreshFavouritesMenu() }
 
     private val showIconObservable = preferencesViewModel.useTrayIconProperty.toObservable()
 
@@ -80,6 +91,14 @@ class TrayIcon : Controller() {
                     }
                 }
                 addSeparator()
+
+                favouritesMenu = Menu(messages["favourites"]).also { add(it) }
+                Platform.runLater {
+                    favouritesViewModel.stationsProperty.addListener(favouritesListener)
+                    refreshFavouritesMenu()
+                }
+
+                addSeparator()
                 item(messages["exit"]) {
                     setOnAction(fxThread = true) {
                         Platform.exit()
@@ -89,9 +108,33 @@ class TrayIcon : Controller() {
         }
     }
 
+    /**
+     * Rebuilds the favourites submenu, showing at most [MAX_FAVOURITES] stations
+     */
+    private fun refreshFavouritesMenu() {
+        // Take snapshot on FX thread, modify AWT menu on Swing thread
+        val stations = favouritesViewModel.stationsProperty.value?.take(MAX_FAVOURITES) ?: emptyList()
+        SwingUtilities.invokeLater {
+            val menu = favouritesMenu ?: return@invokeLater
+            menu.removeAll()
+            stations.forEach { station ->
+                menu.add(MenuItem(station.name).apply {
+                    addActionListener {
+                        Platform.runLater {
+                            selectedStationViewModel.item = SelectedStation(station)
+                        }
+                    }
+                })
+            }
+            menu.isEnabled = stations.isNotEmpty()
+        }
+    }
+
     private fun removeIcon() {
         Platform.setImplicitExit(true)
+        favouritesViewModel.stationsProperty.removeListener(favouritesListener)
         SwingUtilities.invokeLater {
+            favouritesMenu = null
             trayIcon?.let { getSystemTray().remove(it) }
         }
     }
@@ -107,5 +150,9 @@ class TrayIcon : Controller() {
         } else {
             removeIcon()
         }
+    }
+
+    companion object {
+        private const val MAX_FAVOURITES = 10
     }
 }
